@@ -1,15 +1,18 @@
 // Real server data structure with actual monitoring endpoints
 // This service connects to real game server APIs and monitoring services
+// Using proxy: https://secure-272717.tatnet.app/
+
+const PROXY_BASE = '/api';
 
 const GAMES = {
-  SAMP: { id: 'samp', name: 'SAMP', apiEndpoint: 'https://api.open.mp' },
-  CRMP: { id: 'crmp', name: 'CRMP', apiEndpoint: 'https://crmp.online' },
-  MTA: { id: 'mta', name: 'MTA', apiEndpoint: 'https://mirror.mtasa.com' },
-  GTA5: { id: 'gta5', name: 'GTA V', apiEndpoint: 'https://servers-frontend.fivem.net' },
-  MINECRAFT: { id: 'minecraft', name: 'Minecraft', apiEndpoint: 'https://api.mcsrvstat.us' },
-  CS16: { id: 'cs16', name: 'CS 1.6', apiEndpoint: 'https://api.battlemetrics.com' },
-  CSGO: { id: 'csgo', name: 'CS:GO', apiEndpoint: 'https://api.battlemetrics.com' },
-  CS2: { id: 'cs2', name: 'CS2', apiEndpoint: 'https://api.battlemetrics.com' }
+  SAMP: { id: 'samp', name: 'SAMP', apiEndpoint: `${PROXY_BASE}/https://api.open.mp` },
+  CRMP: { id: 'crmp', name: 'CRMP', apiEndpoint: `${PROXY_BASE}/https://crmp.online` },
+  MTA: { id: 'mta', name: 'MTA', apiEndpoint: `${PROXY_BASE}/https://mirror.mtasa.com` },
+  GTA5: { id: 'gta5', name: 'GTA V', apiEndpoint: `${PROXY_BASE}/https://servers-frontend.fivem.net` },
+  MINECRAFT: { id: 'minecraft', name: 'Minecraft', apiEndpoint: `${PROXY_BASE}/https://api.mcsrvstat.us` },
+  CS16: { id: 'cs16', name: 'CS 1.6', apiEndpoint: `${PROXY_BASE}/https://api.battlemetrics.com` },
+  CSGO: { id: 'csgo', name: 'CS:GO', apiEndpoint: `${PROXY_BASE}/https://api.battlemetrics.com` },
+  CS2: { id: 'cs2', name: 'CS2', apiEndpoint: `${PROXY_BASE}/https://api.battlemetrics.com` }
 };
 
 // Real Minecraft servers (publicly available via API)
@@ -79,7 +82,7 @@ export async function fetchMinecraftServer(ip) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
     
-    const response = await fetch(`https://api.mcsrvstat.us/2/${ip}`, {
+    const response = await fetch(`${PROXY_BASE}/https://api.mcsrvstat.us/2/${ip}`, {
       signal: controller.signal
     });
     
@@ -145,9 +148,9 @@ export async function fetchCSServer(server) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    // Using GameDig-compatible public API for Source servers
+    // Using GameDig-compatible public API for Source servers via proxy
     const [ip, port] = server.ip.split(':');
-    const response = await fetch(`https://api.battlemetrics.com/servers?search=${ip}:${port}`, {
+    const response = await fetch(`${PROXY_BASE}/https://api.battlemetrics.com/servers?search=${ip}:${port}`, {
       signal: controller.signal,
       headers: { 'Accept': 'application/json' }
     });
@@ -172,18 +175,14 @@ export async function fetchCSServer(server) {
       };
     }
     
-    // Fallback to simulated data if API fails
+    // Return offline status if API fails - no mock data
     return {
       ...server,
       id: `${server.game}_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: server.game === 'CS2' ? 'Counter-Strike 2' : server.game === 'CSGO' ? 'CS:GO' : 'CS 1.6',
-      online: true,
-      players: {
-        current: Math.floor(Math.random() * 24) + 1,
-        max: 32
-      },
-      region: getRegionFromIP(ip),
-      ping: Math.floor(Math.random() * 80) + 15,
+      online: false,
+      players: { current: 0, max: 32 },
+      error: 'Server not found in API',
       lastUpdate: new Date().toISOString()
     };
   } catch (error) {
@@ -212,8 +211,8 @@ export async function fetchSAMPServer(server) {
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
     const [ip, port] = server.ip.split(':');
-    // Using public SAMP server list API
-    const response = await fetch(`https://api.open.mp/servers/${ip}:${port}`, {
+    // Using public SAMP server list API via proxy
+    const response = await fetch(`${PROXY_BASE}/https://api.open.mp/servers/${ip}:${port}`, {
       signal: controller.signal
     });
     
@@ -227,8 +226,8 @@ export async function fetchSAMPServer(server) {
         gameName: 'San Andreas Multiplayer',
         online: true,
         players: {
-          current: data.players?.online || Math.floor(Math.random() * 500) + 50,
-          max: data.players?.max || 1000
+          current: data.players?.online || 0,
+          max: data.players?.max || 0
         },
         region: getRegionFromIP(ip),
         ping: Math.floor(Math.random() * 60) + 20,
@@ -237,19 +236,14 @@ export async function fetchSAMPServer(server) {
       };
     }
     
-    // Fallback
+    // Return offline status - no mock data
     return {
       ...server,
       id: `samp_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'San Andreas Multiplayer',
-      online: true,
-      players: {
-        current: Math.floor(Math.random() * 500) + 50,
-        max: 1000
-      },
-      region: getRegionFromIP(ip),
-      ping: Math.floor(Math.random() * 60) + 20,
-      uptime: (Math.random() * 30 + 1).toFixed(1),
+      online: false,
+      players: { current: 0, max: 0 },
+      error: 'Server not found in API',
       lastUpdate: new Date().toISOString()
     };
   } catch (error) {
@@ -259,7 +253,7 @@ export async function fetchSAMPServer(server) {
       id: `samp_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'San Andreas Multiplayer',
       online: false,
-      players: { current: 0, max: 1000 },
+      players: { current: 0, max: 0 },
       error: 'Connection failed',
       lastUpdate: new Date().toISOString()
     };
@@ -271,15 +265,15 @@ export async function fetchAllSAMPServers() {
   return await Promise.all(promises);
 }
 
-// Fetch CRMP servers (limited API support, fallback to direct query simulation)
+// Fetch CRMP servers (limited API support, no mock data)
 export async function fetchCRMPServer(server) {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
     const [ip, port] = server.ip.split(':');
-    // CRMP uses custom protocol, attempting public API
-    const response = await fetch(`https://crmp.online/api/server/${ip}:${port}`, {
+    // CRMP uses custom protocol, attempting public API via proxy
+    const response = await fetch(`${PROXY_BASE}/https://crmp.online/api/server/${ip}:${port}`, {
       signal: controller.signal
     }).catch(() => null);
     
@@ -293,8 +287,8 @@ export async function fetchCRMPServer(server) {
         gameName: 'Crimea Multiplayer',
         online: true,
         players: {
-          current: data.players?.online || Math.floor(Math.random() * 300) + 30,
-          max: data.players?.max || 500
+          current: data.players?.online || 0,
+          max: data.players?.max || 0
         },
         region: getRegionFromIP(ip),
         ping: Math.floor(Math.random() * 50) + 15,
@@ -303,19 +297,14 @@ export async function fetchCRMPServer(server) {
       };
     }
     
-    // Fallback with realistic data
+    // Return offline - no mock data
     return {
       ...server,
       id: `crmp_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'Crimea Multiplayer',
-      online: true,
-      players: {
-        current: Math.floor(Math.random() * 300) + 30,
-        max: 500
-      },
-      region: getRegionFromIP(ip),
-      ping: Math.floor(Math.random() * 50) + 15,
-      uptime: (Math.random() * 30 + 1).toFixed(1),
+      online: false,
+      players: { current: 0, max: 0 },
+      error: 'Server not found in API',
       lastUpdate: new Date().toISOString()
     };
   } catch (error) {
@@ -325,7 +314,7 @@ export async function fetchCRMPServer(server) {
       id: `crmp_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'Crimea Multiplayer',
       online: false,
-      players: { current: 0, max: 500 },
+      players: { current: 0, max: 0 },
       error: 'Connection failed',
       lastUpdate: new Date().toISOString()
     };
@@ -344,8 +333,8 @@ export async function fetchMTAServer(server) {
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
     const [ip, port] = server.ip.split(':');
-    // Using MTA public master server list
-    const response = await fetch(`https://mirror.mtasa.com/mtaservers/?search=${ip}:${port}`, {
+    // Using MTA public master server list via proxy
+    const response = await fetch(`${PROXY_BASE}/https://mirror.mtasa.com/mtaservers/?search=${ip}:${port}`, {
       signal: controller.signal
     }).catch(() => null);
     
@@ -360,8 +349,8 @@ export async function fetchMTAServer(server) {
         gameName: 'Multi Theft Auto',
         online: true,
         players: {
-          current: Math.floor(Math.random() * 200) + 20,
-          max: 500
+          current: 0,
+          max: 0
         },
         region: getRegionFromIP(ip),
         ping: Math.floor(Math.random() * 70) + 20,
@@ -370,19 +359,14 @@ export async function fetchMTAServer(server) {
       };
     }
     
-    // Fallback
+    // Return offline - no mock data
     return {
       ...server,
       id: `mta_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'Multi Theft Auto',
-      online: true,
-      players: {
-        current: Math.floor(Math.random() * 200) + 20,
-        max: 500
-      },
-      region: getRegionFromIP(ip),
-      ping: Math.floor(Math.random() * 70) + 20,
-      uptime: (Math.random() * 30 + 1).toFixed(1),
+      online: false,
+      players: { current: 0, max: 0 },
+      error: 'Server not found in API',
       lastUpdate: new Date().toISOString()
     };
   } catch (error) {
@@ -392,7 +376,7 @@ export async function fetchMTAServer(server) {
       id: `mta_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'Multi Theft Auto',
       online: false,
-      players: { current: 0, max: 500 },
+      players: { current: 0, max: 0 },
       error: 'Connection failed',
       lastUpdate: new Date().toISOString()
     };
@@ -410,8 +394,8 @@ export async function fetchGTA5Server(server) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    // Using FiveM public server list API
-    const response = await fetch('https://servers-frontend.fivem.net/api/search?limit=100', {
+    // Using FiveM public server list API via proxy
+    const response = await fetch(`${PROXY_BASE}/https://servers-frontend.fivem.net/api/search?limit=100`, {
       signal: controller.signal,
       headers: { 'Accept': 'application/json' }
     }).catch(() => null);
@@ -431,8 +415,8 @@ export async function fetchGTA5Server(server) {
           gameName: 'Grand Theft Auto V',
           online: true,
           players: {
-            current: foundServer.clients || Math.floor(Math.random() * 100) + 10,
-            max: foundServer.sv_maxclients || 256
+            current: foundServer.clients || 0,
+            max: foundServer.sv_maxclients || 0
           },
           region: getRegionFromIP('185.160.126.40'),
           ping: Math.floor(Math.random() * 90) + 25,
@@ -442,19 +426,14 @@ export async function fetchGTA5Server(server) {
       }
     }
     
-    // Fallback
+    // Return offline - no mock data
     return {
       ...server,
       id: `gta5_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'Grand Theft Auto V',
-      online: true,
-      players: {
-        current: Math.floor(Math.random() * 100) + 10,
-        max: 256
-      },
-      region: getRegionFromIP('185.160.126.40'),
-      ping: Math.floor(Math.random() * 90) + 25,
-      uptime: (Math.random() * 30 + 1).toFixed(1),
+      online: false,
+      players: { current: 0, max: 0 },
+      error: 'Server not found in API',
       lastUpdate: new Date().toISOString()
     };
   } catch (error) {
@@ -464,7 +443,7 @@ export async function fetchGTA5Server(server) {
       id: `gta5_${server.ip.replace(/[:.]/g, '_')}`,
       gameName: 'Grand Theft Auto V',
       online: false,
-      players: { current: 0, max: 256 },
+      players: { current: 0, max: 0 },
       error: 'Connection failed',
       lastUpdate: new Date().toISOString()
     };
