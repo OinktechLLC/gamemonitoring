@@ -1,43 +1,48 @@
-```
-# Dependencies
-node_modules/
+# Examples 1:
+(empty — output nothing)
 
-# Build artifacts
+# Example 2 (Project with artifacts):
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
 dist/
 build/
 target/
 
+# Dependencies
+.venv/
+venv/
+node_modules/
+.julia/
+.zig-cache/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
 # Editors
 .vscode/
 .idea/
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-*.tmp
 *.swp
-*~
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db
-```
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# Original rules preserved
+*.log
