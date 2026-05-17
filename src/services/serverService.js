@@ -1,8 +1,8 @@
 // Real server data structure with actual monitoring endpoints
 // This service connects to real game server APIs and monitoring services
-// Using proxy: https://secure-272717.tatnet.app/
+// Direct API access (proxy removed due to connectivity issues)
 
-const PROXY_BASE = '/api';
+const PROXY_BASE = '';
 
 const GAMES = {
   SAMP: { id: 'samp', name: 'SAMP', apiEndpoint: `${PROXY_BASE}/https://api.open.mp` },
@@ -83,7 +83,8 @@ export async function fetchMinecraftServer(ip) {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
     
     const response = await fetch(`${PROXY_BASE}/https://api.mcsrvstat.us/2/${ip}`, {
-      signal: controller.signal
+      signal: controller.signal,
+      headers: { 'Origin': 'http://localhost' }
     });
     
     clearTimeout(timeoutId);
@@ -152,7 +153,7 @@ export async function fetchCSServer(server) {
     const [ip, port] = server.ip.split(':');
     const response = await fetch(`${PROXY_BASE}/https://api.battlemetrics.com/servers?search=${ip}:${port}`, {
       signal: controller.signal,
-      headers: { 'Accept': 'application/json' }
+      headers: { 'Accept': 'application/json', 'Origin': 'http://localhost' }
     });
     
     clearTimeout(timeoutId);
@@ -213,7 +214,8 @@ export async function fetchSAMPServer(server) {
     const [ip, port] = server.ip.split(':');
     // Using public SAMP server list API via proxy
     const response = await fetch(`${PROXY_BASE}/https://api.open.mp/servers/${ip}:${port}`, {
-      signal: controller.signal
+      signal: controller.signal,
+      headers: { 'Origin': 'http://localhost' }
     });
     
     clearTimeout(timeoutId);
