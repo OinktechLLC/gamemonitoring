@@ -37,20 +37,10 @@ function HomePage({ onServerClick }) {
   const loadServers = async () => {
     try {
       setLoading(true);
-      // Add timeout for the entire loading operation
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Loading timeout')), 15000)
-      );
-      
-      const servers = await Promise.race([
-        fetchAllServers(),
-        timeoutPromise
-      ]);
+      const servers = await fetchAllServers();
       setAllServers(servers);
     } catch (error) {
       console.error('Error loading servers:', error);
-      // Set empty array on error to prevent infinite loading
-      setAllServers([]);
     } finally {
       setLoading(false);
     }

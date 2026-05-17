@@ -45,27 +45,12 @@ function DocsPage() {
 
           <h3>Counter-Strike (CS 1.6, CS:GO, CS2)</h3>
           <p>
-            Интеграция с <a href="https://battlemetrics.com" target="_blank" rel="noopener noreferrer" style={{ color: '#00d9ff' }}>BattleMetrics API</a> для получения данных о серверах Valve. Не требует API ключа для базовой информации.
+            Интеграция с Steam Web API для получения данных о серверах Valve. Требуется API ключ для доступа к расширенной информации.
           </p>
 
-          <h3>SAMP</h3>
+          <h3>SAMP/CRMP/MTA/GTA5</h3>
           <p>
-            Используем открытый API <a href="https://api.open.mp" target="_blank" rel="noopener noreferrer" style={{ color: '#00d9ff' }}>open.mp</a> для мониторинга серверов San Andreas Multiplayer.
-          </p>
-
-          <h3>GTA V (FiveM)</h3>
-          <p>
-            Прямые запросы к публичному списку серверов <a href="https://fivem.net" target="_blank" rel="noopener noreferrer" style={{ color: '#00d9ff' }}>FiveM</a> для получения актуальной информации об онлайне и статусе.
-          </p>
-
-          <h3>MTA</h3>
-          <p>
-            Используем публичный мастер-лист <a href="https://mtasa.com" target="_blank" rel="noopener noreferrer" style={{ color: '#00d9ff' }}>Multi Theft Auto</a> для получения данных о серверах.
-          </p>
-
-          <h3>CRMP</h3>
-          <p>
-            Мониторинг через прямые запросы к серверам Crimea Multiplayer с использованием собственного протокола.
+            Прямые запросы к серверам через протоколы Query для получения актуальной информации об онлайне и статусе.
           </p>
         </section>
 

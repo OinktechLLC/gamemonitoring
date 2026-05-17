@@ -79,15 +79,15 @@ GameMonitoring/
 | Игра | API | Статус |
 |------|-----|--------|
 | **Minecraft** | mcsrvstat.us API | ✅ Работает |
-| **CS 1.6** | BattleMetrics API | ✅ Работает |
-| **CS:GO** | BattleMetrics API | ✅ Работает |
-| **CS2** | BattleMetrics API | ✅ Работает |
-| **SAMP** | open.mp API | ✅ Работает |
-| **CRMP** | Прямые запросы | ✅ Работает |
-| **MTA** | MTA Public Master List | ✅ Работает |
-| **GTA V** | FiveM Public Server List | ✅ Работает |
+| **CS 1.6** | Steam Query Protocol | ⚠️ Симуляция |
+| **CS:GO** | Steam Web API | ⚠️ Симуляция |
+| **CS2** | Steam Web API | ⚠️ Симуляция |
+| **SAMP** | Direct Query | ⚠️ Симуляция |
+| **CRMP** | Direct Query | ⚠️ Симуляция |
+| **MTA** | Direct Query | ⚠️ Симуляция |
+| **GTA V** | FiveM/RAGE MP API | ⚠️ Симуляция |
 
-> ✅ Все игры используют рабочие публичные API без необходимости настройки ключей.
+> ⚠️ Для полноценной работы некоторых игр требуется настройка API ключей и прямых подключений к серверам.
 
 ## 🧠 Алгоритм рекомендаций
 
@@ -168,10 +168,7 @@ GameMonitoring/
 ## 🙏 Благодарности
 
 - [mcsrvstat.us](https://api.mcsrvstat.us) за API Minecraft
-- [BattleMetrics](https://www.battlemetrics.com/) за API CS 1.6/CS:GO/CS2 серверов
-- [open.mp](https://open.mp) за API SAMP серверов
-- [FiveM](https://servers.fivem.net/) за публичный список серверов GTA V
-- [MTA](https://mtasa.com/) за публичный master list серверов
+- [Steam Web API](https://steamcommunity.com/dev) за данные CS серверов
 - Сообществу open-source за отличные инструменты
 
 ---
